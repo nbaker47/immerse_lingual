@@ -71,13 +71,20 @@ body{
   text-align: center;
 }
 
+
+
 .sidenav a {
   color: white;
   font-size: 24px;
 }
 
+.sidenav span{
+  font-size: 10px;
+  padding-right: 1%;
+}
+
 .master-container {
-  margin-top: 30%;
+  margin-top: 10%;
 }
 
 .chinese-small{
