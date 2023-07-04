@@ -1,3 +1,5 @@
+const CACHE_VERSION = 'v2';
+
 // Service Worker code
 self.addEventListener('install', function(event) {
     event.waitUntil(
