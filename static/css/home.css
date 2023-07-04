@@ -11,6 +11,7 @@ body{
 
 .custom-title {
     margin: 20px auto;
+    padding: 5%;
 }
 
 .definitionDiv-class{
@@ -72,7 +73,6 @@ body{
 }
 
 
-
 .sidenav a {
   color: white;
   font-size: 24px;
@@ -91,4 +91,67 @@ body{
   font-family: "Microsoft YaHei";
   font-size: 20px;
   font-weight: lighter;
+}
+
+footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+
+.tab {
+  background-color: #333; /* Darker background color */
+  padding: 10px; /* Adjust padding as desired */
+  color: #fff; /* Text color */
+  position: fixed;
+  bottom: -100px; /* Initial position below the screen */
+  transform: translateX(-50%);
+  animation: slide-up 0.8s ease-in-out forwards; /* Animation to slide up */
+  display: none;
+  left: 50%;
+  width: fit-content; /* Adjust the width to fit the content */
+  text-align: center; /* Center the content horizontally */
+}
+
+
+#install-tab {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: fit-content; /* Adjust the width to fit the content */
+  text-align: center; /* Center the content horizontally */
+}
+
+
+.up-arrow-button {
+  position: fixed;
+  bottom: 30px; /* Adjust the distance from the bottom as needed */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 30px;
+  background-color: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 1;
+  display: none;
+}
+
+.up-arrow-button i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.lines-2{
+  margin-top: 5%;
+  font-size: small;
+}
+
+.email{
+  font-size: 10px;
 }

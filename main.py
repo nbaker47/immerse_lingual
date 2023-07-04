@@ -1,9 +1,19 @@
 import requests
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, send_from_directory
 from ctext import *
 
 app = Flask(__name__)
 setapikey("your-api-key-goes-here")
+
+# serve manifest.json
+@app.route('/manifest.json')
+def serve_manifest():
+    return send_from_directory(app.root_path, 'manifest.json')
+
+# serve manifest.json
+@app.route('/service-worker.js')
+def serve_worker():
+    return send_from_directory(app.root_path, 'service-worker.js')
 
 # book selection page
 @app.route('/')

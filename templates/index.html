@@ -1,11 +1,22 @@
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
 <meta charset="UTF-8">
-<title>Immerse Lingual</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="icon" href="{{ url_for('static', filename='favicon/favicon.ico') }}">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/home.css') }}">
+<head>
+    <title>Immerse Lingual</title>
+
+    <link rel="icon" href="{{ url_for('static', filename='favicon/favicon-beta.ico') }}" sizes="any">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='media/apple-touch-icon.png') }}">
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/home.css') }}">
+    <link rel="manifest" href="/manifest.json" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#161616">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Immerse Lingual is a web app that allows you to read classical Chinese texts with a built-in dictionary.">
+
+</head>
 <body>
 
 
@@ -24,28 +35,144 @@
         -->
         <div class="container">
             <div class="row">
-                {% for book in books %}
-                <div class="col-sm align-self-center">
-                    <div class="card text-white bg-dark mb-3">
-                        <div class="card-body d-flex align-items-center justify-content-center">
-                            {% if loop.index <= 3 %}
-                            <a href="/read?urn={{ book['urn'] }}" class="custom-link chinese">{{ book['title'] }}</a>
-                            {% else %}
-                            <a href="/read?urn={{ book['urn'] }}" class="custom-link chinese">{{ book['title'] }} - Restricted</a>
-                            {% endif %}
-                        </div>
-                    </div>
+              {% for book in books %}
+              <div class="col-sm align-self-center">
+                <div class="card text-white bg-dark mb-3">
+                  <div class="card-body d-flex align-items-center justify-content-center">
+                    {% if loop.index <= 3 %}
+                    <a href="/read?urn={{ book['urn'] }}" class="custom-link chinese wave-effect">{{ book['title'] }}</a>
+                    {% else %}
+                    <a href="/read?urn={{ book['urn'] }}" class="custom-link chinese wave-effect">{{ book['title'] }} - Restricted</a>
+                    {% endif %}
+                  </div>
                 </div>
-                {% endfor %}
+              </div>
+              {% endfor %}
             </div>
-        </div>
+          </div>
+          
 
     </div>
 
 
 </div>
 
+<!-- Footer -->
+<div class="position-fixed bottom-0 start-50 translate-middle-x mb-3">
+    <div class="tab bg-dark text-white rounded shadow" id="install-tab">
+        <div class="container">
+            <div class="row">
+                <div class="col-6">
+                    <div class="tab-content d-flex align-items-center justify-content-center">
+                        <a id="install-button" style="cursor: pointer;">
+                            <img src="{{ url_for('static', filename='media/icon-192.png') }}" style="width: 70px; height: 70px;" alt="Download">
+                        </a>
+                        <span class="ml-2 text-white lines-2"><strong>Download the app now!</strong></span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="text-white text-center lines-2 text-xs">
+                        <p>&copy; Immerse Lingual 2023</p>
+                        <div class="email">
+                            <p>immerselingual@gmail.com</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="up-arrow-button" id="up-arrow-button" style="display: none;">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </div>
+</div>
+
+
+  
+
+<!--jQuery-->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!--Bootstrap JS-->
 <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+<!--Service Worker-->
+<script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register("/service-worker.js")
+          .then(function(registration) {
+            console.log('Service Worker registered with scope:', registration.scope);
+          })
+          .catch(function(error) {
+            console.error('Service Worker registration failed:', error);
+          });
+      });
+    }
+</script>
+<!--Download Button-->
+<script>
+    let deferredPrompt;
+
+    window.addEventListener('beforeinstallprompt', (event) => {
+      // Prevent the default prompt from showing
+      event.preventDefault();
+      // Store the event for later use
+      deferredPrompt = event;
+      // Display the install button or trigger the installation automatically
+      // based on your user experience strategy
+    });
+
+    const installButton = document.getElementById('install-button');
+
+    installButton.addEventListener('click', () => {
+    if (deferredPrompt) {
+        // Show the installation prompt
+        deferredPrompt.prompt();
+        // Wait for the user's response
+        deferredPrompt.userChoice.then((choiceResult) => {
+        // Reset the deferredPrompt variable
+        deferredPrompt = null;
+        // Handle the user's choice (e.g., log the result)
+        console.log('User choice:', choiceResult.outcome);
+        });
+    }
+    });
+
+    $(document).ready(function() {
+        const installTab = $('#install-tab');
+        const upArrowButton = $('#up-arrow-button');
+    
+        // Hide the tab initially and show the up arrow button
+        installTab.hide();
+        upArrowButton.show();
+    
+        // Move the dot up and toggle tab visibility when the dot is clicked
+        upArrowButton.on('click', function() {
+            if (installTab.is(':hidden')) {
+                // Show the tab
+                upArrowButton.animate({ bottom: installTab.outerHeight() });
+                installTab.slideDown();
+            } else {
+                // Hide the tab
+                upArrowButton.animate({ bottom: 30 });
+                installTab.slideUp();
+            }
+        });
+    
+        // Move the dot up and toggle tab visibility when the tab is clicked
+        installTab.on('click', function() {
+            if (installTab.is(':hidden')) {
+                // Show the tab
+                upArrowButton.animate({ bottom: installTab.outerHeight() });
+                installTab.slideDown();
+            } else {
+                // Hide the tab
+                upArrowButton.animate({ bottom: 30 });
+                installTab.slideUp();
+            }
+        });
+    });
+    
+
+</script>
+  
 </body>
 </html>

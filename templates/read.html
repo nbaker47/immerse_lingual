@@ -3,7 +3,10 @@
 <meta charset="UTF-8">
 <title>Immerse Lingual</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="icon" href="{{ url_for('static', filename='favicon/favicon.ico') }}">
+
+<link rel="icon" href="{{ url_for('static', filename='favicon/favicon-beta.ico') }}" sizes="any">
+<link rel="apple-touch-icon" href="{{ url_for('static', filename='media/apple-touch-icon.png') }}">
+
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/home.css') }}">
 <!-- Include jQuery -->
@@ -22,7 +25,7 @@
     </a>
 
     <!-- Button trigger modal -->
-    <a href="#" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    <a href="#" data-bs-toggle="modal" data-bs-target="#exampleModal" class="float-right" style='padding-right:3px;'>
         <i class="fas fa-info-circle"></i>
     </a>
     
