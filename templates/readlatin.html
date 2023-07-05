@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<meta charset="UTF-8">
+<title>Immerse Lingual</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="icon" href="{{ url_for('static', filename='favicon/favicon-beta.ico') }}" sizes="any">
+<link rel="apple-touch-icon" href="{{ url_for('static', filename='media/apple-touch-icon.png') }}">
+
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/home.css') }}">
+<!-- Include jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<!-- Include Bootstrap JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<!-- Include icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<body>
+
+<!-- Navbar-->
+<div class="sidenav">
+    <a href="/"><i class="fas fa-home"></i></a>
+    <a href="javascript:history.back();">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+
+    <!-- Button trigger modal -->
+    <a href="#" data-bs-toggle="modal" data-bs-target="#exampleModal" class="float-right" style='padding-right:3px;'>
+        <i class="fas fa-info-circle"></i>
+    </a>
+    
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content" style='background-color: #161616; color: aliceblue;'>
+                <div class="modal-header">
+                    <img src="{{ url_for('static', filename='media/screenshot.png') }}" width="100%" height="100%" class="d-inline-block align-top" alt="">
+                </div>
+                <div class="modal-body">
+                    <p>Press a word to see its pronunciation and definition.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<div class="display-1 text-center custom-title fade-in">
+    <h1>{{ title }}</h1>
+</div>
+
+<div class="custom-div fade-in chinese-small" id="bodytext">
+</div>
+
+<!-- Include Popper.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+<!-- Include Bootstrap JS and jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<!--text gen-->
+<script>
+    var my_list = {{ body|tojson }};
+    my_list = my_list.split("---")[0].trim();
+    my_list = my_list.split("<")[0].trim();
+    var words = my_list.split(" ");
+    my_list = words
+    var bodytext = document.getElementById("bodytext");
+    
+    for (var i = 0; i < my_list.length; i++) {
+
+        // create hanzi and wrap it in a span
+        var spanElement = document.createElement("span");
+        // console.log(my_list)
+        //console.log(my_list[i]);
+        var hanzi = document.createTextNode(my_list[i] + ' ');
+        spanElement.appendChild(hanzi);
+        spanElement.style.backgroundColor = "transparent";
+
+        // if punctuation, do not add definition
+        if (my_list[i][0] != "，" && my_list[i][0] != "：" && my_list[i][0] != "「" && my_list[i][0] != "？" && my_list[i][0] != " "){
+            //mouseover event
+            spanElement.addEventListener("mouseover", function() {
+
+                // highlight hanzi
+                this.style.backgroundColor = "#161616";
+                this.style.border = "1px solid aliceblue";
+                //this.style.borderTop = "none";
+
+                // create hidden definition above hanzi
+                var definitionDiv = document.createElement("div");
+                definitionDiv.id = "definition";
+                definitionDiv.classList.add("definitionDiv-class");
+
+                // Create the spinner element
+                var spinner = document.createElement('div');
+                spinner.className = 'spinner-border text-light';
+                spinner.setAttribute('role', 'status');
+                definitionDiv.appendChild(spinner);
+
+                // Set the position of the new div
+                var referenceRect = this.getBoundingClientRect();
+                definitionDiv.style.position = 'absolute';
+                definitionDiv.style.top = (referenceRect.top - 45) + 'px'; // Position it x pixels above
+                definitionDiv.style.left = (referenceRect.left + (referenceRect.width / 5 ) ) + 'px';
+                definitionDiv.style.backgroundColor = "#161616";
+
+                // append definition to bodytext
+                bodytext.appendChild(definitionDiv);
+
+                // retrieve 漢字 to 拼音 from API
+                fetch('https://helloacm.com/api/pinyin/?cached&s=' + this.textContent + '&t=1')
+                    .then(response => response.json())
+                    .then(data => {
+                        // Process the data returned from the API
+                        pinyinText = JSON.stringify(data.result).replace(/[\[\]]/g, '');
+                        // retrieve english definition from API
+                        const apiKey = '4670812e-ea92-88b1-8b82-0812f3f4009b:fx';
+                        const textToTranslate = this.textContent;
+                        const apiUrl = 'https://api-free.deepl.com/v2/translate?auth_key=' + apiKey + '&text=' + textToTranslate + '&source_lang=fr&target_lang=en';
+                        return fetch(apiUrl);
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // obtain translated text
+                        const translatedText = data.translations[0].text;
+                        definitionText = translatedText;
+                        // clear definitionDiv and append pinyin and definition
+                        definitionDiv.innerHTML =  "";
+                        spinner.remove();
+                        definitionDiv.innerHTML +=  definitionText;
+                        // reposition definitionDiv
+                        var definitionDivReferenceRect = definitionDiv.getBoundingClientRect();
+                        var leftPosition = referenceRect.left + referenceRect.width / 2 - definitionDivReferenceRect.width / 2;
+                        definitionDiv.style.top = (referenceRect.top - 45) + 'px'; // Position it x pixels above
+                        definitionDiv.style.left = leftPosition + 'px';
+                    })
+                    .catch(error => {
+                        spinner.remove();
+                        console.error('Error:', error);
+                    });
+            });
+            //mouseout event
+            spanElement.addEventListener("mouseout", function() {
+                this.style.backgroundColor = "transparent";
+                this.style.border = "0px";
+                document.getElementById("definition").remove();
+            });
+        }
+        //
+        if (my_list[i][0] == "@"){
+            var lineBreak = document.createElement("p");
+            bodytext.appendChild(lineBreak);
+        }
+        else{
+            //append hanzi to bodytext
+            bodytext.appendChild(spanElement);
+        }
+    }
+
+</script>
+
+</body>
+</html>

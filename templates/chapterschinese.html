@@ -28,13 +28,15 @@
 <div class="custom-div fade-in text-center fade-in" id="books">
     <div class="container">
         <div class="row">
-            {% for key, value in chapters.items() %}
+            {% for chapter in chapters %}
+            {% set formatted_text = chapter.split("/")[-1] | replace("-", " ") | title %}
+            {% set font_size = '16px' if formatted_text|length <= 15 else '14px' %}
 
             <div class="col-sm-4">
                 <div class="card text-white bg-dark mb-3">
                   <div class="card-body d-flex align-items-center justify-content-center">
-                    <a href="/readtext?key={{ key }}" class="custom-link wave-effect" style="font-size: {{ font_size }};">
-                      {{ value }}
+                    <a href="/readchinese?urn={{ chapter }}" class="custom-link wave-effect" style="font-size: {{ font_size }};">
+                      {{ formatted_text }}
                     </a><br>
                   </div>
                 </div>
